@@ -1,0 +1,18 @@
+{
+  "service": {
+    "id": "metric",
+    "name": "metric",
+    "address": "##IP##",
+    "port": 8125,
+    "checks": [
+      {
+      "id": "http-statsd-80",
+      "name": "TCP Port 8126",
+      "tcp": "##IP##:8126",
+      "interval": "15s",
+      "timeout": "1s"
+      }
+
+    ]
+  }
+}

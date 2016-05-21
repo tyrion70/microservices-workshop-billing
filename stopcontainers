@@ -1,0 +1,8 @@
+#!/bin/bash
+cd /Users/Peter/microservices/docker/billing
+for container in `docker ps|grep billing|awk -F\  '{print $1}'|grep -v CONTAINER`
+do
+  echo "Killing $container" 
+  docker kill $container
+done
+./housekeeping

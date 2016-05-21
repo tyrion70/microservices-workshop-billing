@@ -1,0 +1,10 @@
+{
+  "ID": "alive",
+  "Name": "Alive",
+  "Notes": "Check if we are alive",
+  "Script": "/usr/local/bin/alive",
+  "DockerContainerID": "##DOCKER##",
+  "Shell": "/bin/bash",
+  "Interval": "10s"
+}
+

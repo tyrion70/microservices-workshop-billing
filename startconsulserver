@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+eval "$(docker-machine env default)"
+ip=`ifconfig en0|grep inet\  |awk -F\  '{print $2}'`
+#consul agent -data-dir=/tmp/consul -server -bootstrap-expect 1 -ui-dir ./consul/consul_0.6.4_web_ui -config-dir ./consul/config -bind 127.0.0.1  -client 127.0.0.1
+#consul agent -data-dir=/tmp/consul -server -bootstrap-expect 1 -ui-dir ./consul/consul_0.6.4_web_ui -config-dir ./consulconfig -bind $ip -client $ip
+consul agent -data-dir=/tmp/consul -server -bootstrap-expect 1 -ui-dir ./consul/consul_0.6.4_web_ui -config-dir ./consulconfig -bind $ip -client $ip

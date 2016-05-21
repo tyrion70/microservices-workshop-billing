@@ -1,0 +1,4 @@
+#!/bin/sh
+#RTFM: https://www.consul.io/docs/agent/http.html
+curl -s localhost:8500/v1/health/service/web?passing
+echo

@@ -1,0 +1,15 @@
+#!/bin/bash
+eval "$(docker-machine env default)"
+cd /Users/Peter/microservices/docker/billing
+
+#docker run --name mysql -v /Users/Peter/microservices/docker/billing/mysql:/var/lib/mysql -e MYSQL_ALLOW_EMPTY_PASSWORD=true mysql
+docker run --name mysql -v /mysqldata:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=password mysql
+
+# Get IP
+dockerip=`docker-machine ip`
+ip=`ifconfig en0|grep inet\  |awk -F\  '{print $2}'`
+
+data=`cat mysql.json | sed "s/##IP##/$dockerip/"`
+echo $data > consulconfig/mysql.json
+consul reload -rpc-addr $ip:8400
+

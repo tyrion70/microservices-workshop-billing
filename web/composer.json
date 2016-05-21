@@ -1,0 +1,7 @@
+{
+    "require": {
+        "domnikl/statsd": "~2.0",
+        "cascade-energy/php-consul-http-client": "^0.1.0",
+        "phpFastCache/phpFastCache": "^4.3"
+    }
+}

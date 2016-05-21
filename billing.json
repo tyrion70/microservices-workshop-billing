@@ -1,0 +1,26 @@
+{
+  "service": {
+    "id": "billing-##PORT##",
+    "name": "billing",
+    "address": "##IP##",
+    "port": ##PORT##,
+    "checks": [
+      {
+      "id": "alive-docker-##PORT##",
+      "name": "Alive",
+      "docker_container_id": "##DOCKER##",
+      "shell": "/bin/bash",
+      "script": "/usr/local/bin/amialive",
+      "interval": "10s"
+      },
+      {
+      "id": "http-##PORT##",
+      "name": "TCP Port 80",
+      "tcp": "##IP##:##PORT##",
+      "interval": "15s",
+      "timeout": "1s"
+      }
+
+    ]
+  }
+}

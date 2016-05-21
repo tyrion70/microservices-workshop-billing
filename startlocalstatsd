@@ -1,0 +1,23 @@
+#!/bin/bash
+#set -x
+eval "$(docker-machine env default)"
+cd /Users/Peter/microservices/docker/billing
+
+docker run -d\
+ --name graphite\
+ --restart=always\
+ -p 80:80\
+ -p 2003-2004:2003-2004\
+ -p 2023-2024:2023-2024\
+ -p 8125:8125/udp\
+ -p 8126:8126\
+ hopsoft/graphite-statsd
+
+# Get IP
+dockerip=`docker-machine ip`
+ip=`ifconfig en0|grep inet\  |awk -F\  '{print $2}'`
+
+data=`cat statsd.json | sed "s/##IP##/$dockerip/"`
+echo $data > consulconfig/statsd.json
+consul reload -rpc-addr $ip:8400
+

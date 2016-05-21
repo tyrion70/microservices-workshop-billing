@@ -1,0 +1,110 @@
+[
+  {
+    "id": "1",
+    "name": "Ladybank Single Malt",
+    "brand": "Ladybank",
+    "description": "Slechts 300 flessen worden elk jaar gemaakt van deze Whiskey uit Edinburgh (Schotland) en om er een te krijgen moet je lid zijn van de club. De prijs van het lidmaatschap? $4700 per jaar.",
+    "cost": 4700.00,
+    "available": 1,
+    "category": "exclusive"
+  },
+  {
+    "id": "2",
+    "name": "Macallan 1947",
+    "brand": "Macallan",
+    "description": "Macallen Whiskey zullen we nog vaker tegen komen in deze lijst, maar dan nog wat ouder. Een 15 jaar oude Whiskey (want gebotteld in 1963), gerijpt in Sherry vaten. De whiskey heeft smaken van citrusfruit, chocolade en vanille, met notensmaak in de achtergrond, en een zware rooksmaak als nasmaak.",
+    "cost": 6800.00,
+    "available": 1,
+    "category": "exclusive"
+  },
+  {
+    "id": "3",
+    "name": "Chivas Regal Royal Salute",
+    "brand": "Chivas Regal",
+    "description": "Gebottled in 1953 (21 jaar oud) een speciale blended whiskey met een rokerige aroma van anijs en rozijnen, speciaal voor de kroning van Queen Elizabeth II. 50 jaar later werd nog eenmaal 255 flessen gebottled, elke fles kost $10.000. De fles heeft een 24 karaats goud en zilver label.",
+    "cost": 10000.00,
+    "available": 1,
+    "category": "exclusive"
+  },
+  {
+    "id": "4",
+    "name": "Macallan 1939",
+    "brand": "Macallan",
+    "description": "Een sterke Whiskey met een zachte aroma van toffee en gedroogd fruit. Voor het eerst gebottled in 1979.",
+    "cost": 10125.00,
+    "available": 1,
+    "category": "exclusive"
+  },
+  {
+    "id": "5",
+    "name": "1955 Glenfarclas",
+    "brand": "Glenfarclas",
+    "description": "In 2005 gebottled en hiermee de oudste gebottlede Glenfarclas (50 jaar). “Spicy and silky with a sweet taste”.",
+    "cost": 10878.00,
+    "available": 1,
+    "category": "exclusive"
+  },
+  {
+    "id": "6",
+    "name": "Dalmore 50 jaar oud",
+    "brand": "Dalmore",
+    "description": "Slechts 60 flessen zijn er gemaakt van deze single malt whiskey. Gebottled in 1978 en wordt door velen gezien als de beste 50 jaar oude Whiskeys ter wereld.",
+    "cost": 11000.00,
+    "available": 1,
+    "category": "exclusive"
+  },
+  {
+    "id": "7",
+    "name": "Macallan Lalique Crystal Decanter",
+    "brand": "Macallan",
+    "description": "Nog een Whiskey uit de Macallan collectie (55 jaar). De fles is een copy van de flessen uit 1910. Er zijn slechts 420 flessen beschikbaar. De smaak wordt omgeschreven als “Exotic”, met een rokerige aroma.",
+    "cost": 12500.00,
+    "available": 1,
+    "category": "exclusive"
+  },
+  {
+    "id": "8",
+    "name": "Glenfiddich Rare Collection 1937",
+    "brand": "Glenfiddich",
+    "description": "Slechts een fles is beschikbaar, en misschien is dit wel de oudste fles whiskey ter wereld. In 2006 werd de fles verkocht op een veiling voor $20.000",
+    "cost": 20000.00,
+    "available": 1,
+    "category": "exclusive"
+  },
+  {
+    "id": "9",
+    "name": "Dalmore 62",
+    "brand": "Dalmore",
+    "description": "Een single Malt Whiskey gemaakt in 1943 uit vier Malts uit 1868, 1876, 1926 en 1939. In 2005 kocht een man een fles voor $58.000 en dronk deze in een avond op met 5 vrienden. De andere 11 overgebleven flessen bevinden zich in prive collecties.",
+    "cost": 58000.00,
+    "available": 1,
+    "category": "exclusive"
+  },
+  {
+    "id": "10",
+    "name": "Macallan 1926",
+    "brand": "Macallan",
+    "description": "Gebottled in 1986 en nogmaals in 2002, de smaak is “Dry and concentrated”. In 2005 kocht een Zuid-koreaan een fles voor $75.000. Wil je niet gelijk een hele fles kopen? Dan kun je deze Whiskey proberen in het Borgata Hotel Casino & Spa in Atlantic city voor slechts $3300 per slok.",
+    "cost": 75000.00,
+    "available": 1,
+    "category": "exclusive"
+  },
+  {
+    "id": "11",
+    "name": "Dalmore 64 Trinitas",
+    "brand": "Dalmore",
+    "description": "De naam Trinitas is gekozen omdat er slechts 3 flessen zijn gemaakt van deze bijzondere Whiskey. Het is een mix van exclusieve collecties, met onder andere 140 jaar gerijpte destillaat.",
+    "cost": 160100.00,
+    "available": 1,
+    "category": "exclusive"
+  },
+  {
+    "id": "12",
+    "name": "The Macallan in Lalique, 1964",
+    "brand": "Macallan",
+    "description": "De allerduurste Whiskey is de oudste Whiskey van Macallan, 64 jaar oud. De Whiskey is verkocht op een veiling in november 2010 voor het goede doel.",
+    "cost": 460000.00,
+    "available": 1,
+    "category": "exclusive"
+  }
+]

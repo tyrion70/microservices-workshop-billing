@@ -1,0 +1,18 @@
+{
+  "service": {
+    "id": "mysql",
+    "name": "mysql",
+    "address": "##IP##",
+    "port": 3306,
+    "checks": [
+      {
+      "id": "http-mysql-3306",
+      "name": "TCP Port 3306",
+      "tcp": "##IP##:3306",
+      "interval": "15s",
+      "timeout": "1s"
+      }
+
+    ]
+  }
+}

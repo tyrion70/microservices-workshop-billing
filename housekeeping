@@ -1,0 +1,42 @@
+#!/bin/bash
+#set -x
+eval "$(docker-machine env default)"
+cd /Users/Peter/microservices/docker/billing
+
+cd services
+
+files=(*.lock)
+
+if [ ! -e "${files[0]}" ];
+then 
+  echo "No lock files"
+  exit
+fi
+for file in *.lock
+do
+  NUM=`echo $file|awk -F\. '{print $1}'`
+  PS=`cat $file`
+  ALIVE=`docker ps |grep -c $PS`
+  if [ $ALIVE -gt 0 ]
+  then
+    echo "Container $file is alive"
+  else
+    echo "Container $file is dead, I should kill it"
+    mv $file $NUM
+    echo "" > $NUM
+    rm ../consulconfig/${NUM}.json
+  fi
+done
+
+for container in `docker ps|grep billing|awk -F\  '{print $1}'|grep -v CONTAINER`
+do
+  for file in /Users/Peter/microservices/docker/billing/services/*.lock
+  do
+    COUNT=`grep -c $container $file`
+    if [ $COUNT -eq 0 ]
+    then
+      echo "Container $container running without registration, we should kill it!"
+      docker kill $container
+    fi
+  done
+done

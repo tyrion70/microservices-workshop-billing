@@ -1,0 +1,3 @@
+#!/bin/sh
+#RTFM: https://www.consul.io/docs/agent/options.html
+consul agent -config-dir /vagrant/config1 -data-dir /tmp/consul -bind 172.20.20.11

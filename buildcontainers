@@ -1,0 +1,4 @@
+#!/bin/bash
+eval "$(docker-machine env default)"
+cd /Users/Peter/microservices/docker/billing
+docker build -t billing .

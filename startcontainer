@@ -1,0 +1,24 @@
+#!/bin/bash
+#set -x 
+eval "$(docker-machine env default)"
+cd /Users/Peter/microservices/docker/billing
+firstavail=`find services -type f -exec basename {} \;|grep -v lock|sort|head -1`
+if [ $firstavail == "" ] 
+then
+  echo "No service available"
+fi
+echo "Starting service with port $firstavail"
+
+# Lock it
+mv services/$firstavail services/$firstavail.lock
+
+# Get IP
+ip=`ifconfig en0|grep inet\  |awk -F\  '{print $2}'`
+
+# Run it
+PS=`docker run -d -p $firstavail:80 -e "NAME=$firstavail" -e "CONSULURL=${ip}:8500" -t billing|cut -c1-12`
+echo $PS >services/$firstavail.lock
+data=`cat billing.json | sed "s/##PORT##/$firstavail/" | sed "s/##DOCKER##/$PS/" | sed "s/##IP##/$ip/"`
+echo $data > consulconfig/$firstavail.json
+consul reload -rpc-addr $ip:8400
+#curl -X PUT http://localhost:8500/v1/agent/service/register --data "$data"
