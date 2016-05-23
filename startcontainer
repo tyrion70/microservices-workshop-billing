@@ -15,8 +15,12 @@ mv services/$firstavail services/$firstavail.lock
 # Get IP
 ip=`ifconfig en0|grep inet\  |awk -F\  '{print $2}'`
 
+# Change in case of other consul
+consulip=${ip}
+# consulip=10.240.107.138
+
 # Run it
-PS=`docker run -d -p $firstavail:80 -e "NAME=$firstavail" -e "CONSULURL=${ip}:8500" -t billing|cut -c1-12`
+PS=`docker run -d -p $firstavail:80 -e "NAME=$firstavail" -e "CONSULURL=${consulip}:8500" -t billing|cut -c1-12`
 echo $PS >services/$firstavail.lock
 data=`cat billing.json | sed "s/##PORT##/$firstavail/" | sed "s/##DOCKER##/$PS/" | sed "s/##IP##/$ip/"`
 echo $data > consulconfig/$firstavail.json

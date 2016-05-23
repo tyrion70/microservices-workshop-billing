@@ -1,5 +1,0 @@
-#!/bin/bash
-ip=`ifconfig en0|grep inet\  |awk -F\  '{print $2}'`
-eval "$(docker-machine env default)"
-#consul agent -data-dir /tmp/consul -config-dir /Users/Peter/microservices/docker/billing/consulconfig -join 10.240.107.195 -bind 10.240.106.12
-consul agent -data-dir /tmp/consul -config-dir /Users/Peter/microservices/docker/billing/consulconfig -join $ip -bind $ip

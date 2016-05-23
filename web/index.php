@@ -3,20 +3,27 @@
 $starttime = microtime();
 require __DIR__ . '/vendor/autoload.php';
 
+// date_default_timezone_set('Europe/Berlin');
+
 $myname = $_ENV['NAME'];
 $consulurl = $_ENV['CONSULURL'];
 
 use phpFastCache\CacheManager;
 $cache = CacheManager::Files();
 
-include_once 'connection.inc.php';
-$db = new Connection();
 
 // Instantiate service discovery
 //$serviceLookup = new CascadeEnergy\ServiceDiscovery\Consul\ConsulHttp(null,"192.168.1.111:8500");
 $serviceLookup = new CascadeEnergy\ServiceDiscovery\Consul\ConsulHttp(null,$consulurl);
 
-$metricurl = $serviceLookup->getServiceAddress("metric");
+include_once 'connection.inc.php';
+try {
+    $db = new Connection($serviceLookup->getServiceAddress("mysql"),'microservicesbilling','microbilling','password');
+} catch (Exception $e) {
+    return sendError(500, "500", $e->getMessage());
+}
+
+$metricurl = $serviceLookup->getServiceURL("metrics");
 if ($metricurl == null) {
     throw new Exception('Metric service not found!');
 }
@@ -35,7 +42,14 @@ $statsd->gauge($myname.".calls", '+1');
 
 // Determine what service is requested
 $url = explode("/",$_SERVER['REQUEST_URI']);
-$body = file_get_contents('php://input');
+$headers = getallheaders();
+debugLog($headers);
+if ($headers['Content-Encoding'] == "gzip") {
+    $body = gzdecode(file_get_contents('php://input'));
+} else {
+    $body = file_get_contents('php://input');
+}
+debugLog($body);
 $body = json_decode($body);
 
 switch($_SERVER['REQUEST_METHOD']) {
@@ -52,6 +66,22 @@ switch($_SERVER['REQUEST_METHOD']) {
                 getOrder($ordernum);
                 break;
             }
+        }
+        // Accounts mock service!
+        if (substr($url[1],0,8) == "accounts") {
+            echo '{
+"firstName": "Willem",
+"lastName": "Dekker",
+"street": "Lichtenauerlaan 120",
+"city": "Rotterdam",
+"state": "Zuid-Holland",
+"postCode": "3062 ME",
+"email": "willem.dekker@luminis.eu",
+"phone": "+31 88 58 64 640",
+"country": "Nederland",
+"bankAccount": "NLRABO123456789"
+}';
+            exit;
         }
         sendError(403, "403", "This is not allowed (wrong function)");
         break;
@@ -78,22 +108,12 @@ switch($_SERVER['REQUEST_METHOD']) {
 }
 
 function postOrder() {
-    global $myname, $statsd, $body, $serviceLookup, $cache;
+    global $myname, $statsd, $body, $serviceLookup, $db, $cache;
 
-/*
-        {
-        user: “Willem Dekker”,
-        orderNumber: 42
-        price: 144.12
-        }
- */
     // getaccounts with user
-    $accounturl = $serviceLookup->getServiceAddress("accounts");
-    $url = $accounturl."/accounts?user=".$body->name;
+    $accounturl = $serviceLookup->getServiceURL("accounts");
+    $url = $accounturl."/accounts/".$body->user;
     $key = "accounts+".$body->user;
-
-    $response["key"] = $key;
-    $response["url"] = $url;
 
     if ($accounturl == null) {
         // No accounts service store order as processing
@@ -105,12 +125,21 @@ function postOrder() {
         }
     } else {
         // Get account information and store order
-        $accountinfo = file_get_contents($url);
+        $accountinfo = @file_get_contents($url);
         if ($accountinfo===false) {
             // Not able to get live accountinfo, try cache
-            $accountinfo = $cache->get("accounts+" . $body->user);
+            $accountinfo = $cache->get($key);
             if (is_null($accountinfo)) {
                 // No cached account info, return error
+                // Insert data into database
+                $query = "insert into orders (ordernumber, state, user, price)
+                             VALUES (".$body->orderNumber.",'processing','".$body->user."','".$body->price."')";
+                try {
+                    $db->Query($query);
+                } catch (Exception $e) {
+                    return sendError(500, "500", $e->getMessage());
+
+                }
                 return sendError(503, "503", "No account information available");
             }
         } else {
@@ -121,23 +150,22 @@ function postOrder() {
     }
 
     // Insert data into database
-    //
-    $query = "insert into order SET
-                state='processing',
-                user='".$body->user."',
-                name='".$accountinfo->firstName." ".$accountinfo->lastName."',
-                phone='".$accountinfo->phone."',
-                email='".$accountinfo->email."',
-                street='".$accountinfo->street."',
-                city='".$accountinfo->city."',
-                postcode='".$accountinfo->postCode."'";
-    $ordernumber = $db->QueryReturn($query);
-    $response["orderNumber"] = $ordernumber;
+    $query = "insert into orders (ordernumber, state, user, name, phone, email, street, city, postcode, price, bankaccount)
+              VALUES (".$body->orderNumber.",'processing','".$body->user."','".$accountinfo->firstName." ".$accountinfo->lastName."',
+                '".$accountinfo->phone."','".$accountinfo->email."','".$accountinfo->street."','".$accountinfo->city."',
+                '".$accountinfo->postCode."','".$body->price."','".$accountinfo->bankAccount."')";
+    try {
+        $db->Query($query);
+    } catch (Exception $e) {
+        return sendError(500, "500", $e->getMessage());
+
+    }
+    $response["orderNumber"] = $body->orderNumber;
     $response["state"] = 'processing';
 
     echo json_encode($response);
 
-    // call recomendations ???
+    // call recommendations ???
 
     $statsd->increment($myname.".postorder");
     $statsd->gauge($myname.".postorder", '+1');
@@ -162,8 +190,7 @@ function returnOrder() {
             if ($row['state']=="paid") {
                 // update order line
                 $query = "update orders set state='returned' where ordernumber = $orderid";
-                echo $query;
-                $db->Query($query);
+                // $db->Query($query);
 
                 $response["state"] = 'returned';
                 echo json_encode($response);
@@ -216,6 +243,17 @@ function sendError($httpresponse, $code, $description) {
     $error["description"] = $description;
     echo json_encode($error);
 }
+
+function debugLog($log) {
+    $handle = fopen('debug.log',"a+");
+    if (is_array($log) or is_object($log)) {
+        fwrite($handle, date("Y-m-d H:i")." ".var_export($log, true)."\n");
+    } else {
+        fwrite($handle, date("Y-m-d H:i")." ".$log."\n");
+    }
+    fclose($handle);
+}
+
 // phpinfo();
 /*
 echo "Count: " . count($url);

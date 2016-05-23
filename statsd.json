@@ -1,18 +1,1 @@
-{
-  "service": {
-    "id": "metric",
-    "name": "metric",
-    "address": "##IP##",
-    "port": 8125,
-    "checks": [
-      {
-      "id": "http-statsd-80",
-      "name": "TCP Port 8126",
-      "tcp": "##IP##:8126",
-      "interval": "15s",
-      "timeout": "1s"
-      }
-
-    ]
-  }
-}
+{ "service": { "id": "metrics", "name": "metrics", "address": "192.168.99.101", "port": 8125, "checks": [ { "id": "http-statsd-80", "name": "TCP Port 80", "tcp": "192.168.99.101:8126", "interval": "15s", "timeout": "1s" } ] } }

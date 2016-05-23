@@ -1,0 +1,7 @@
+#!/bin/bash
+ip=`ifconfig en0|grep inet\  |awk -F\  '{print $2}'`
+echo "Starting consul on ip: $ip"
+eval "$(docker-machine env default)"
+#consul agent -data-dir /tmp/consul -config-dir /Users/Peter/microservices/docker/billing/consulconfig -join 10.240.107.138 -bind 10.240.106.12
+consul agent -data-dir /tmp/consul -config-dir /Users/Peter/microservices/docker/billing/consulconfig -join 10.240.107.138 -bind $ip -client $ip
+#consul agent -data-dir /tmp/consul -config-dir /Users/Peter/microservices/docker/billing/consulconfig -join $ip -bind $ip
