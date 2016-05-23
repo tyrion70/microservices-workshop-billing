@@ -1,5 +1,6 @@
 #!/bin/bash
 git clone https://github.com/tyrion70/microservices-workshop-billing.git
+cd microservices-workshop-billing
 firstavail=`find services -type f -exec basename {} \;|grep -v lock|sort|head -1`
 if [ $firstavail == "" ]
 then
