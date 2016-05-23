@@ -33,9 +33,9 @@ try {
 }
 
 $metricurl = $serviceLookup->getServiceURL("metrics");
-if ($metricurl == null) {
-    throw new Exception('Metric service not found!');
-}
+// if ($metricurl == null) {
+//     throw new Exception('Metric service not found!');
+// }
 
 // Parse the metric url
 $metricurl = parse_url($metricurl);

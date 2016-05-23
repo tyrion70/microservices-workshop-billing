@@ -19,6 +19,6 @@ consulip=${ip}
 PS=`docker run -d -p 10010:80 -e "NAME=10010" -e "CONSULURL=${consulip}:8500" -t billing|cut -c1-12`
 echo $PS >services/10010.lock
 
-newman -c Billing.postman_collection
+newman -c Billing.postman_collection || exit 1
 
-docker kill $PS
+# docker kill $PS
