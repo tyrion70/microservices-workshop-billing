@@ -1,6 +1,10 @@
 <?php
 // phpinfo();
+header('Content-Type: application/json');
 $starttime = microtime();
+if ($_GET['testing']=='1') {
+    $testing=true;
+}
 require __DIR__ . '/vendor/autoload.php';
 
 // date_default_timezone_set('Europe/Berlin');
@@ -18,7 +22,12 @@ $serviceLookup = new CascadeEnergy\ServiceDiscovery\Consul\ConsulHttp(null,$cons
 
 include_once 'connection.inc.php';
 try {
-    $db = new Connection($serviceLookup->getServiceAddress("mysql"),'microservicesbilling','microbilling','password');
+
+    $db = new Connection(
+        $serviceLookup->getServiceAddress("mysql"),
+        'microservicesbilling',
+        base64_decode($serviceLookup->getKV('mysql-username')),
+        base64_decode($serviceLookup->getKV('mysql-password')));
 } catch (Exception $e) {
     return sendError(500, "500", $e->getMessage());
 }
@@ -55,10 +64,11 @@ $body = json_decode($body);
 switch($_SERVER['REQUEST_METHOD']) {
 
     case "GET":
-        if ($url[1] == "bills") {
+        if (substr($url[1],0,5) == "bills") {
             if (count($url)==3) {
                 // We are in the get billing state, show body text
-                $ordernum = filter_var($url[2], FILTER_VALIDATE_INT);
+                $ordernum = explode('?',$url[2]);
+                $ordernum = filter_var($ordernum[0], FILTER_VALIDATE_INT);
                 if (!$ordernum)  {
                     sendError(403, "403", "This is not allowed (incorrect order number)");
                     break;
@@ -86,13 +96,13 @@ switch($_SERVER['REQUEST_METHOD']) {
         sendError(403, "403", "This is not allowed (wrong function)");
         break;
     case "POST":
-        if ($url[1] == "bills") {
+        if (substr($url[1],0,5) == "bills") {
             if (count($url)==2) {
                 // We are in the post order, show body text
                 postOrder();
                 break;
             } else {
-                if ($url[2] == "returns") {
+                if (substr($url[2],0,7) == "returns") {
                     if (count($url)==3) {
                         // We are in the return order function, show body text
                         returnOrder();
@@ -108,7 +118,7 @@ switch($_SERVER['REQUEST_METHOD']) {
 }
 
 function postOrder() {
-    global $myname, $statsd, $body, $serviceLookup, $db, $cache;
+    global $myname, $statsd, $body, $serviceLookup, $db, $cache, $testing;
 
     // getaccounts with user
     $accounturl = $serviceLookup->getServiceURL("accounts");
@@ -135,7 +145,8 @@ function postOrder() {
                 $query = "insert into orders (ordernumber, state, user, price)
                              VALUES (".$body->orderNumber.",'processing','".$body->user."','".$body->price."')";
                 try {
-                    $db->Query($query);
+                    $i=1;
+                    if (!$testing) $db->Query($query);
                 } catch (Exception $e) {
                     return sendError(500, "500", $e->getMessage());
 
@@ -155,7 +166,8 @@ function postOrder() {
                 '".$accountinfo->phone."','".$accountinfo->email."','".$accountinfo->street."','".$accountinfo->city."',
                 '".$accountinfo->postCode."','".$body->price."','".$accountinfo->bankAccount."')";
     try {
-        $db->Query($query);
+        $i=1;
+        if (!$testing) $db->Query($query);
     } catch (Exception $e) {
         return sendError(500, "500", $e->getMessage());
 
@@ -172,7 +184,7 @@ function postOrder() {
 }
 
 function returnOrder() {
-    global $myname, $statsd, $body, $db;
+    global $myname, $statsd, $body, $db, $testing;
 
     // Pseudo
     // get id from body
@@ -190,7 +202,7 @@ function returnOrder() {
             if ($row['state']=="paid") {
                 // update order line
                 $query = "update orders set state='returned' where ordernumber = $orderid";
-                // $db->Query($query);
+                if (!$testing) $db->Query($query);
 
                 $response["state"] = 'returned';
                 echo json_encode($response);
@@ -207,7 +219,7 @@ function returnOrder() {
 }
 
 function getOrder($orderid) {
-    global $myname, $statsd, $body, $db;
+    global $myname, $statsd, $body, $db, $testing;
 
     $statsd->increment($myname.".getorder");
     $statsd->gauge($myname.".getorder", '+1');
