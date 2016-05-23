@@ -1,5 +1,5 @@
 #!/bin/bash
-#set -x
+set -x
 eval "$(docker-machine env default)"
 cd /Users/Peter/microservices/docker/billing
 
