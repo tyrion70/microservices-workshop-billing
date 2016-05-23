@@ -1,4 +1,5 @@
 #!/bin/bash
+rm -fr microservices-workshop-billing
 git clone https://github.com/tyrion70/microservices-workshop-billing.git
 cd microservices-workshop-billing
 firstavail=`find services -type f -exec basename {} \;|grep -v lock|sort|head -1`
