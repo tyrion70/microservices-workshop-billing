@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 rm -fr microservices-workshop-billing
 git clone https://github.com/tyrion70/microservices-workshop-billing.git
 cd microservices-workshop-billing
